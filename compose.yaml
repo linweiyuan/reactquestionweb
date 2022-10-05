@@ -1,0 +1,8 @@
+services:
+  reactquestionweb:
+    container_name: reactquestionweb
+    image: reactquestionweb
+    ports:
+      - 3000:80
+    build: .
+    restart: unless-stopped
