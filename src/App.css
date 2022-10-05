@@ -1,0 +1,15 @@
+@import "~antd/dist/antd.css";
+
+.wrapper {
+  padding: 50px 30px;
+}
+
+h1 {
+  text-align: center;
+}
+
+.answer {
+  border: 1px dashed #ccc;
+  padding: 10px;
+  margin: 15px 0;
+}
