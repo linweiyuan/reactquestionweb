@@ -1,17 +1,27 @@
 import { Button, Form, message, Radio, Space } from "antd"
-import React from "react"
-import { useGetData } from "use-axios-react"
+import React, { useState } from "react"
+import { useGetData, usePostCallback } from "use-axios-react"
 
 export default function App() {
   const [responseData, loading] = useGetData(`http://localhost/api/questions`);
 
-  const onChange = (e) => {};
-
   const [form] = Form.useForm();
 
-  const onFinish = (values) => {
-    console.log("submit answers");
+  const [answerData, setAnswerData] = useState({});
+
+  const onChange = (e) => {
+    const value = e.target.value;
+    const [questionID, answerID] = value.split(":");
+    const newData = { [questionID]: answerID };
+    setAnswerData((oldData) => Object.assign(oldData, newData));
   };
+
+  const submitAnswers = () => ({
+    url: `http://localhost/api/questions`,
+    data: { answers: answerData },
+  });
+
+  const [submit, submitting, { data }] = usePostCallback(submitAnswers);
 
   const onFinishFailed = () => {
     message.warning("请填写全部选项");
@@ -21,7 +31,7 @@ export default function App() {
     <>
       {!loading && (
         <div className="wrapper">
-          <Form form={form} onFinish={onFinish} onFinishFailed={onFinishFailed}>
+          <Form form={form} onFinish={submit} onFinishFailed={onFinishFailed}>
             <h1>请完成下面性格测试</h1>
             {responseData.questions.map((question, index) => {
               return (
@@ -54,6 +64,14 @@ export default function App() {
                 </div>
               );
             })}
+
+            {!submitting && data && (
+              <div>
+                <div>总分：{data.totalScore}</div>
+                <div>评价：{data.result}</div>
+              </div>
+            )}
+
             <Form.Item>
               <Button type="primary" htmlType="submit">
                 Submit
